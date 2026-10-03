@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Dashboard interactivo para clasificar la distribución lateral de carga en la mochila ASUS AP4600."
+    />
+    <meta name="theme-color" content="#101010" />
+    <title>Balance Core · Clasificador de carga</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e7e7e7'/%3E%3Cpath d='M18 27h28v24H18zM24 27v-5a8 8 0 0 1 16 0v5' fill='none' stroke='%23101010' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M32 31v16M22 39h20' stroke='%23101010' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-a" aria-hidden="true"></div>
+    <div class="ambient ambient-b" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#simulador" aria-label="Ir al simulador">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M8 13h16v14H8zM11.5 13V9.5a4.5 4.5 0 0 1 9 0V13M16 15v10M10 20h12" /></svg>
+        </span>
+        <span>
+          <strong>BALANCE CORE</strong>
+          <small>Reto 1 · Equipo 6</small>
+        </span>
+      </a>
+      <div class="top-actions">
+        <span class="live-pill"><i></i> Clasificador activo</span>
+        <button class="button button-ghost" id="presentationButton" type="button">
+          <span aria-hidden="true">⛶</span> Modo presentación
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">PROTOTIPO DIGITAL · DISTRIBUCIÓN DE CARGA EN 2 EJES</p>
+          <h1 id="page-title">¿La carga está <span>equilibrada?</span></h1>
+          <p class="lede">
+            Ajusta el peso de las cuatro zonas y observa, en tiempo real, el estado de la mochila y la acción recomendada.
+          </p>
+        </div>
+        <div class="formula-chip" aria-label="Fórmula de desbalance lateral">
+          <small>VARIABLE DE DECISIÓN</small>
+          <span>ΔLat = |Izq − Der| ÷ Total × 100<br />ΔVert = |Sup − Inf| ÷ Total × 100</span>
+        </div>
+      </section>
+
+      <section class="spec-strip" aria-label="Ficha de la plataforma">
+        <article>
+          <span class="spec-icon">01</span>
+          <div><small>PLATAFORMA</small><strong>ASUS AP4600</strong></div>
+        </article>
+        <article>
+          <span class="spec-icon">02</span>
+          <div><small>DIMENSIONES</small><strong>45 × 32 × 8 cm</strong></div>
+        </article>
+        <article>
+          <span class="spec-icon">03</span>
+          <div><small>MASA EN VACÍO</small><strong>450 g</strong></div>
+        </article>
+        <article>
+          <span class="spec-icon">04</span>
+          <div><small>RANGO DE PRUEBA</small><strong>1–10 kg</strong></div>
+        </article>
+      </section>
+
+      <section class="dashboard" id="simulador" aria-label="Simulador de distribución de carga">
+        <article class="panel control-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-index">01 · ENTRADAS</p>
+              <h2>Carga por zona</h2>
+            </div>
+            <button class="icon-button" id="resetButton" type="button" title="Restablecer distribución simétrica" aria-label="Restablecer distribución simétrica">↻</button>
+          </div>
+          <p class="panel-note">Desliza o escribe el peso estimado de cada cuadrante.</p>
+
+          <div class="zone-controls" id="zoneControls">
+            <div class="zone-control" data-zone="z1">
+              <div class="zone-control-head"><span><b>Z1</b> Superior izquierda</span><output id="z1Output">1,25 kg</output></div>
+              <div class="input-row">
+                <input id="z1Range" type="range" min="0" max="5" step="0.05" value="1.25" aria-label="Peso de Z1 en kilogramos" />
+                <label><input id="z1Number" type="number" min="0" max="5" step="0.05" value="1.25" aria-label="Peso numérico de Z1" /><span>kg</span></label>
+              </div>
+            </div>
+            <div class="zone-control" data-zone="z2">
+              <div class="zone-control-head"><span><b>Z2</b> Superior derecha</span><output id="z2Output">1,25 kg</output></div>
+              <div class="input-row">
+                <input id="z2Range" type="range" min="0" max="5" step="0.05" value="1.25" aria-label="Peso de Z2 en kilogramos" />
+                <label><input id="z2Number" type="number" min="0" max="5" step="0.05" value="1.25" aria-label="Peso numérico de Z2" /><span>kg</span></label>
+              </div>
+            </div>
+            <div class="zone-control" data-zone="z3">
+              <div class="zone-control-head"><span><b>Z3</b> Inferior izquierda</span><output id="z3Output">1,25 kg</output></div>
+              <div class="input-row">
+                <input id="z3Range" type="range" min="0" max="5" step="0.05" value="1.25" aria-label="Peso de Z3 en kilogramos" />
+                <label><input id="z3Number" type="number" min="0" max="5" step="0.05" value="1.25" aria-label="Peso numérico de Z3" /><span>kg</span></label>
+              </div>
+            </div>
+            <div class="zone-control" data-zone="z4">
+              <div class="zone-control-head"><span><b>Z4</b> Inferior derecha</span><output id="z4Output">1,25 kg</output></div>
+              <div class="input-row">
+                <input id="z4Range" type="range" min="0" max="5" step="0.05" value="1.25" aria-label="Peso de Z4 en kilogramos" />
+                <label><input id="z4Number" type="number" min="0" max="5" step="0.05" value="1.25" aria-label="Peso numérico de Z4" /><span>kg</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-loader">
+            <label for="scenarioSelect">Escenario de validación</label>
+            <div>
+              <select id="scenarioSelect" aria-label="Seleccionar escenario de validación"></select>
+              <button class="button button-secondary" id="loadScenarioButton" type="button">Cargar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel backpack-panel">
+          <div class="panel-heading compact">
+            <div>
+              <p class="panel-index">02 · MAPA DE CARGA</p>
+              <h2>Mochila monitoreada</h2>
+            </div>
+            <span class="orientation"><i></i> Vista frontal</span>
+          </div>
+
+          <div class="backpack-stage">
+            <img src="./assets/mochila-frontal.png" alt="Vista frontal de la mochila ASUS AP4600 utilizada en el proyecto" />
+            <div class="zone-grid" aria-label="Mapa de cuatro zonas de carga">
+              <div class="load-zone" id="visualZ1"><span>Z1</span><strong>1,25</strong><small>25,0 %</small></div>
+              <div class="load-zone" id="visualZ2"><span>Z2</span><strong>1,25</strong><small>25,0 %</small></div>
+              <div class="load-zone" id="visualZ3"><span>Z3</span><strong>1,25</strong><small>25,0 %</small></div>
+              <div class="load-zone" id="visualZ4"><span>Z4</span><strong>1,25</strong><small>25,0 %</small></div>
+            </div>
+            <div class="center-axis" aria-hidden="true"><span>EJE CENTRAL</span></div>
+            <div class="ideal-center" aria-label="Centro ideal de la carga"><span>+</span><small>IDEAL</small></div>
+            <div class="pressure-center" id="pressureCenter" aria-label="Centro de presión actual"><span></span><small>CENTRO ACTUAL</small></div>
+          </div>
+
+          <div class="axis-balances">
+            <div class="axis-balance" aria-label="Comparación lateral">
+              <div><span>IZQUIERDA</span><strong id="leftWeight">2,50 kg</strong></div>
+              <div class="balance-track"><i id="leftBar"></i><em></em><i id="rightBar"></i></div>
+              <div><span>DERECHA</span><strong id="rightWeight">2,50 kg</strong></div>
+            </div>
+            <div class="axis-balance" aria-label="Comparación vertical">
+              <div><span>SUPERIOR</span><strong id="topWeight">2,50 kg</strong></div>
+              <div class="balance-track vertical-track"><i id="topBar"></i><em></em><i id="bottomBar"></i></div>
+              <div><span>INFERIOR</span><strong id="bottomWeight">2,50 kg</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel result-panel" id="resultPanel">
+          <div class="panel-heading compact">
+            <div>
+              <p class="panel-index">03 · RESULTADO</p>
+              <h2>Diagnóstico técnico</h2>
+            </div>
+            <span class="method-tag">RF-04 · 2 EJES</span>
+          </div>
+
+          <div class="status-orbit" aria-hidden="true">
+            <svg viewBox="0 0 180 180">
+              <circle class="orbit-bg" cx="90" cy="90" r="76" />
+              <circle class="orbit-value" id="orbitValue" cx="90" cy="90" r="76" />
+            </svg>
+            <div><small>BALANCE SCORE</small><strong id="scoreValue">100</strong><em>/100</em></div>
+          </div>
+
+          <div class="status-copy" aria-live="polite">
+            <span class="status-kicker"><i></i> ESTADO ACTUAL</span>
+            <h3 id="statusLabel">Equilibrada</h3>
+            <p id="statusMessage">Mantener la distribución actual: el centro de presión está próximo al centro ideal.</p>
+          </div>
+
+          <div class="result-metrics">
+            <div><span>Δ lateral</span><strong id="deltaValue">0,0%</strong></div>
+            <div><span>Δ vertical</span><strong id="deltaVertValue">0,0%</strong></div>
+            <div><span>Carga total</span><strong id="totalWeight">5,00 kg</strong></div>
+            <div><span>Dominancia</span><strong id="dominantSide">Centrada</strong></div>
+          </div>
+
+          <div class="thresholds" aria-label="Umbrales de clasificación">
+            <div class="threshold green"><span>&lt; 10%</span><small>Equilibrada</small></div>
+            <div class="threshold amber"><span>10–15%</span><small>Mejorable</small></div>
+            <div class="threshold red"><span>&gt; 15%</span><small>Desequilibrada</small></div>
+          </div>
+
+          <p class="range-warning" id="rangeWarning" hidden>La carga total debe estar entre 1 y 10 kg para clasificarla.</p>
+        </article>
+      </section>
+
+      <section class="monitoring-section" id="monitoreo" aria-labelledby="monitoring-title">
+        <div class="monitoring-head">
+          <div>
+            <p class="panel-index">04 · MONITOREO EN TIEMPO REAL</p>
+            <h2 id="monitoring-title">Lecturas de los cuatro sensores</h2>
+          </div>
+          <div class="reading-rate"><i></i><span>SIMULACIÓN ACTIVA</span><strong>2 Hz</strong><small>cada 500 ms</small></div>
+        </div>
+        <div class="monitoring-grid">
+          <div class="chart-card">
+            <div class="chart-meta"><span>HISTÓRICO DE CARGA</span><small>últimas 40 lecturas · kg</small></div>
+            <svg class="history-chart" id="historyChart" viewBox="0 0 960 230" role="img" aria-label="Gráfico histórico de las cargas Z1, Z2, Z3 y Z4">
+              <g class="chart-grid" aria-hidden="true">
+                <line x1="52" y1="20" x2="940" y2="20"/><line x1="52" y1="65" x2="940" y2="65"/>
+                <line x1="52" y1="110" x2="940" y2="110"/><line x1="52" y1="155" x2="940" y2="155"/>
+                <line x1="52" y1="200" x2="940" y2="200"/>
+              </g>
+              <g class="chart-labels" aria-hidden="true"><text x="12" y="24">5,0</text><text x="12" y="114">2,5</text><text x="24" y="204">0</text></g>
+              <path class="sensor-line z1-line" id="historyZ1" d="" />
+              <path class="sensor-line z2-line" id="historyZ2" d="" />
+              <path class="sensor-line z3-line" id="historyZ3" d="" />
+              <path class="sensor-line z4-line" id="historyZ4" d="" />
+              <line class="sweep-line" x1="940" y1="20" x2="940" y2="200" />
+            </svg>
+            <div class="chart-time"><span>−20 s</span><span>Ahora</span></div>
+          </div>
+          <div class="sensor-rack" aria-label="Estado actual de los sensores">
+            <article class="sensor-card z1-sensor"><span><i></i>SENSOR Z1</span><strong id="sensorZ1">1,25</strong><small>kg · superior izquierda</small></article>
+            <article class="sensor-card z2-sensor"><span><i></i>SENSOR Z2</span><strong id="sensorZ2">1,25</strong><small>kg · superior derecha</small></article>
+            <article class="sensor-card z3-sensor"><span><i></i>SENSOR Z3</span><strong id="sensorZ3">1,25</strong><small>kg · inferior izquierda</small></article>
+            <article class="sensor-card z4-sensor"><span><i></i>SENSOR Z4</span><strong id="sensorZ4">1,25</strong><small>kg · inferior derecha</small></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="validation-section" id="validacion" aria-labelledby="validation-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">TRAZABILIDAD DEL ALGORITMO</p>
+            <h2 id="validation-title">Banco de 10 escenarios</h2>
+            <p>Selecciona una fila para llevar sus datos al simulador y comprobar la clasificación.</p>
+          </div>
+          <div class="validation-score"><small>RESULTADO</small><strong><span id="correctCount">10</span>/10</strong><em>clasificaciones correctas</em></div>
+        </div>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Escenario</th>
+                <th>Z1</th><th>Z2</th><th>Z3</th><th>Z4</th>
+                <th>Carga total</th>
+                <th>ΔLat</th>
+                <th>ΔVert</th>
+                <th>Esperado</th>
+                <th>Calculado</th>
+                <th>Verificación</th>
+              </tr>
+            </thead>
+            <tbody id="scenarioTableBody"></tbody>
+          </table>
+        </div>
+        <p class="table-hint">Consejo para la presentación: usa E03, E04, E07 y E08 para mostrar el cambio justo antes y después de cada umbral.</p>
+      </section>
+
+      <section class="method-section" aria-labelledby="method-title">
+        <div class="method-copy">
+          <p class="eyebrow">LÓGICA DE DECISIÓN</p>
+          <h2 id="method-title">Una regla simple, visible y verificable.</h2>
+          <p>
+            El algoritmo compara izquierda contra derecha y superior contra inferior. El estado toma el eje más exigente; el balance score se calcula como 100 − 2 × máx(ΔLat, ΔVert).
+          </p>
+          <p class="disclaimer">El umbral es un criterio de ingeniería para el prototipo académico; no constituye un diagnóstico médico.</p>
+        </div>
+        <div class="logic-flow" aria-label="Flujo del algoritmo">
+          <div><span>1</span><strong>Capturar</strong><small>Z1 · Z2 · Z3 · Z4</small></div>
+          <i>→</i>
+          <div><span>2</span><strong>Comparar</strong><small>Lateral + vertical</small></div>
+          <i>→</i>
+          <div><span>3</span><strong>Clasificar</strong><small>Verde · ámbar · rojo</small></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Proyecto Culminante de Diseño · Seminario 3</span>
+      <span>Equipo 6 · Prototipo digital V2</span>
+    </footer>
+  </body>
+</html>
